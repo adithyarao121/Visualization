@@ -66,9 +66,6 @@ class GradientVolume:
             return 0
         return self.data[x + self.volume.dim_x * (y + self.volume.dim_y * z)]
 
-        # this line is mapping a 3D coordinate system to a 2D one. Every voxel in my volume will
-        # have a gradient value that I have to calculate.
-
     def set_gradient(self, x, y, z, value):
         self.data[x + self.volume.dim_x * (y + self.volume.dim_y * z)] = value
 
@@ -88,7 +85,6 @@ class GradientVolume:
         """
         Computes the gradient for the current volume
         """
-        # this just initializes all gradients to the vector (0,0,0)
         self.data = [ZERO_GRADIENT] * (self.volume.dim_x * self.volume.dim_y * self.volume.dim_z)
 
         self.set_gradient(0, 0, 0, 0)
@@ -96,14 +92,10 @@ class GradientVolume:
         for i in range(1, self.volume.dim_x - 1):
             for j in range(1, self.volume.dim_y - 1):
                 for k in range(1, self.volume.dim_z - 1):
-                    fx = self.volume.data[i, j, k]
-
-                    # TODO: How to handle delta_f for a 3D delta_f
-                    delta_fx = (self.volume.data[i - 1, j, k] - self.volume.data[i + 1, j, k]) / 2
-                    delta_fy = (self.volume.data[i, j - 1, k] - self.volume.data[i, j + 1, k]) / 2
-                    delta_fz = (self.volume.data[i, j, k - 1] - self.volume.data[i, j, k + 1]) / 2
-
-                    voxel_grad = VoxelGradient(delta_fx, delta_fy, delta_fz)
+                    dfx = (self.volume.data[i - 1, j, k] - self.volume.data[i + 1, j, k]) / 2
+                    dfy = (self.volume.data[i, j - 1, k] - self.volume.data[i, j + 1, k]) / 2
+                    dfz = (self.volume.data[i, j, k - 1] - self.volume.data[i, j, k + 1]) / 2
+                    voxel_grad = VoxelGradient(dfx, dfy, dfz)
                     self.set_gradient(i, j, k, voxel_grad)
     def get_max_gradient_magnitude(self):
         if self.max_magnitude < 0:
